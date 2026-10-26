@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TV Home</title>
+<style>
+:root{--bg:#070b1a;--ink:#eef3ff;--dim:#9fb0d6;--glow:#4f7cff;--tile:rgba(18,28,64,.55);--edge:rgba(79,124,255,.55);color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif}
+#sky{position:fixed;inset:0;width:100%;height:100%}
+#photo{position:fixed;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,0) 55%),linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0) 35%),url(/wallpaper.jpg) center/cover no-repeat;display:none}
+#edge{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 12vw 1vw var(--edge)}
+.top{position:fixed;left:4vw;top:5vh}
+#time{font-size:9vw;font-weight:200;letter-spacing:-.02em;line-height:1}
+#time small{font-size:2.2vw;margin-left:.6vw;color:var(--dim)}
+#date{font-size:1.9vw;margin:1vh 0 2.4vh;color:var(--dim)}
+.wx{display:flex;gap:1.2vw;align-items:center;font-size:1.5vw;margin-bottom:.8vh}
+.chip{display:inline-block;margin-top:1.2vh;padding:.7vh 1.2vw;border-radius:2vw;background:var(--tile);font-size:1.3vw}
+.dock{position:fixed;left:4vw;right:4vw;bottom:9vh;display:flex;gap:1.3vw;align-items:flex-end}
+.tile{position:relative;width:7.8vw;height:7.8vw;border-radius:1.6vw;background:var(--tile);border:1px solid rgba(160,180,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.4vw;text-align:center;outline:none;transition:transform .18s ease-out,opacity .18s ease-out;opacity:.85;will-change:transform}
+.tile::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .18s ease-out;box-shadow:0 0 2.4vw .4vw var(--glow),0 0 0 .22vw #fff}
+.tile:focus{transform:translateY(-1.2vh) scale(1.12);opacity:1}
+.tile:focus::after{opacity:1}
+.tile span{padding:0 .5vw}
+.label{position:absolute;bottom:-3.4vh;left:0;right:0;text-align:center;font-size:1.2vw;font-weight:400;color:var(--dim);opacity:0}
+.tile:focus .label{opacity:1}
+#toast{position:fixed;right:4vw;bottom:26vh;padding:1vh 1.4vw;border-radius:1vw;background:var(--tile);font-size:1.3vw;opacity:0;transition:opacity .2s}
+#toast.on{opacity:1}
+#note{position:fixed;right:4vw;top:5vh;width:22vw;opacity:0;transition:opacity .4s}
+#note.on{opacity:1}
+#noteimg{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;border-radius:1.4vw;background:var(--tile);border:1px solid rgba(160,180,255,.25)}
+#hint{margin-top:.8vh;font-size:1.05vw;color:var(--dim);text-align:center}
+@media (prefers-reduced-motion:reduce){.tile,.tile::after{transition:none}}
+</style>
+</head>
+<body>
+<svg id="sky" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs>
+<linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop id="a1" offset="0" stop-color="#1b2a6b"/><stop id="a2" offset=".55" stop-color="#7d8fd6"/><stop id="a3" offset="1" stop-color="#e5b9c8"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop id="b1" offset="0" stop-color="#dfe9ff"/><stop id="b2" offset=".5" stop-color="#5f7fcf"/><stop id="b3" offset="1" stop-color="#1c2f6e"/></linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#g1)"/>
+<path d="M0 560 L220 330 L330 420 L520 240 L720 470 L860 380 L1060 250 L1260 450 L1400 360 L1600 500 L1600 900 L0 900Z" fill="url(#g2)"/>
+<path d="M520 240 L585 330 L545 320 L520 360 L490 315 L470 330Z M1060 250 L1115 330 L1080 322 L1058 355 L1035 318 L1005 332Z" fill="#fff" opacity=".9"/>
+<path d="M0 640 Q400 560 800 640 T1600 620 L1600 900 L0 900Z" fill="#0d1a47"/>
+<g fill="#06102b"><path id="t" d="M0 900 L0 700 L30 780 L45 740 L70 820 L90 760 L120 860 L150 900Z"/></g>
+<rect y="760" width="1600" height="140" fill="#06102b"/>
+</svg>
+<div id="photo"></div>
+<div id="edge"></div>
+<div class="top">
+<div id="time">--:--</div>
+<div id="date"></div>
+<div class="wx"><span id="w1">Loading weather…</span></div>
+<div class="chip" id="tip">Checking forecast</div>
+</div>
+<div id="toast"></div>
+<div id="note"><img id="noteimg" alt=""><div id="hint"></div></div>
+<nav class="dock" id="dock"></nav>
+<script>
+// ---- Edit this block to customise ----
+var CONFIG={lat:25.2,lon:55.27,city:"Dubai",hour12:true};
+var APPS=[
+["HD Streamz","name:hdstreamz","HDS"],
+["Netflix","com.netflix.ninja"],
+["YouTube","com.google.android.youtube.tv"],
+["Prime Video","com.amazon.amazonvideo.livingroom"],
+["Disney+ Hotstar","in.startv.hotstar"],
+["Shahid","net.mbc.shahidtv"],
+["Apple TV","com.apple.atve.androidtv.appletv"],
+["Spotify","com.spotify.tv.android"],
+["Settings","#settings"],
+["Appearance","#theme"]
+];
+// --------------------------------------
+var dock=document.getElementById("dock"),toast=document.getElementById("toast"),tt;
+APPS.forEach(function(a){
+  var b=document.createElement("button");
+  b.className="tile";b.setAttribute("data-pkg",a[1]);
+  b.innerHTML="<span>"+(a[2]||a[0].split(" ")[0])+"</span><div class=\"label\">"+a[0]+"</div>";
+  b.style.border="1px solid rgba(160,180,255,.25)";
+  b.onclick=function(){launch(a)};
+  dock.appendChild(b);
+});
+var THEMES=[
+["#1b2a6b","#7d8fd6","#e5b9c8","#dfe9ff","#5f7fcf","#1c2f6e","rgba(60,170,120,.45)","#3cc88a"],
+["#1b2a6b","#7d8fd6","#e5b9c8","#dfe9ff","#5f7fcf","#1c2f6e","rgba(79,124,255,.55)","#4f7cff"],
+["#3a1c5e","#d9667a","#ffc27a","#ffe9d6","#c8708a","#4a2250","rgba(255,120,90,.5)","#ff7a5a"],
+["#02040d","#0b1636","#1a2a5c","#34508f","#17295a","#0a1230","rgba(60,200,170,.45)","#3cc8aa"]];
+var ti=0;try{ti=parseInt(localStorage.getItem("theme"))||0}catch(e){}
+function applyTheme(){
+  var t=THEMES[ti%THEMES.length],ids=["a1","a2","a3","b1","b2","b3"],r=document.documentElement.style;
+  for(var i=0;i<6;i++)document.getElementById(ids[i]).setAttribute("stop-color",t[i]);
+  document.getElementById("photo").style.display=(ti%THEMES.length===0)?"block":"none";
+  r.setProperty("--edge",t[6]);r.setProperty("--glow",t[7]);
+}
+applyTheme();
+function launch(a){
+  if(a[1]==="#theme"){ti=(ti+1)%THEMES.length;applyTheme();try{localStorage.setItem("theme",ti)}catch(e){}return}
+  if(window.Android&&Android.launch){Android.launch(a[1]);return}
+  toast.textContent="Would open "+a[0];toast.classList.add("on");
+  clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},1800);
+}
+var tiles=[].slice.call(dock.children);
+tiles[0].focus();
+document.addEventListener("keydown",function(e){
+  var i=tiles.indexOf(document.activeElement);if(i<0)i=0;
+  if(e.key==="ArrowRight")tiles[Math.min(i+1,tiles.length-1)].focus();
+  else if(e.key==="ArrowLeft")tiles[Math.max(i-1,0)].focus();
+});
+document.addEventListener("click",function(){if(tiles.indexOf(document.activeElement)<0)tiles[0].focus()});
+function tick(){
+  var d=new Date(),h=d.getHours(),m=("0"+d.getMinutes()).slice(-2),s="";
+  if(CONFIG.hour12){s=h>=12?"PM":"AM";h=h%12||12}
+  document.getElementById("time").innerHTML=h+":"+m+(s?"<small>"+s+"</small>":"");
+  document.getElementById("date").textContent=d.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+}
+tick();setInterval(tick,20000);
+function weather(){
+  try{
+    fetch("https://api.open-meteo.com/v1/forecast?latitude="+CONFIG.lat+"&longitude="+CONFIG.lon+"&current=temperature_2m&daily=temperature_2m_max,temperature_2m_min&timezone=auto")
+    .then(function(r){return r.json()}).then(function(j){
+      var c=Math.round(j.current.temperature_2m),hi=Math.round(j.daily.temperature_2m_max[0]),lo=Math.round(j.daily.temperature_2m_min[0]);
+      document.getElementById("w1").textContent=CONFIG.city+"  "+c+"°C  (H "+hi+"° / L "+lo+"°)";
+      document.getElementById("tip").textContent=hi>=35?"Very hot today, stay hydrated":hi>=28?"Warm, light clothes":"Mild, a light layer helps";
+    }).catch(fail);
+  }catch(e){fail()}
+}
+function fail(){document.getElementById("w1").textContent=CONFIG.city+"  --°C";document.getElementById("tip").textContent="Weather unavailable offline"}
+weather();setInterval(weather,1800000);
+var nv=-1,noteEl=document.getElementById("note");
+if(window.Android&&Android.ip){
+  document.getElementById("hint").textContent="Draw a note from your phone: http://"+Android.ip()+":8080/draw";
+  noteEl.classList.add("on");
+  document.getElementById("noteimg").style.visibility="hidden";
+}
+function pollNote(){
+  fetch("/note").then(function(r){return r.json()}).then(function(j){
+    if(j.v!==nv){nv=j.v;if(j.img){var im=document.getElementById("noteimg");im.src=j.img;im.style.visibility="visible";noteEl.classList.add("on")}}
+  }).catch(function(){});
+}
+pollNote();setInterval(pollNote,3000);
+</script>
+</body>
+</html>
