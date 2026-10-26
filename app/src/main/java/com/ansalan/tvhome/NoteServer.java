@@ -1,21 +1,39 @@
 package com.ansalan.tvhome;
 
 import android.content.Context;
+import android.util.Log;
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class NoteServer extends Thread {
     private final Context ctx;
+    private final Runnable onReady;
     private volatile String img = "";
     private volatile int ver = 0;
+    private volatile int port = 8080;
 
-    NoteServer(Context c) { ctx = c; setDaemon(true); }
+    NoteServer(Context c, Runnable ready) { ctx = c; onReady = ready; setDaemon(true); }
+
+    int port() { return port; }
 
     @Override public void run() {
-        try (ServerSocket ss = new ServerSocket(8080)) {
+        ServerSocket ss = null;
+        for (int p = 8080; p <= 8089 && ss == null; p++) {
+            try {
+                ServerSocket t = new ServerSocket();
+                t.setReuseAddress(true);
+                t.bind(new InetSocketAddress(p));
+                ss = t; port = p;
+            } catch (Exception e) { Log.w("TvHome", "port " + p + " busy: " + e); }
+        }
+        if (ss == null) { Log.e("TvHome", "no free port"); return; }
+        Log.i("TvHome", "server on " + port);
+        if (onReady != null) onReady.run();
+        try {
             while (true) { final Socket s = ss.accept(); new Thread(() -> handle(s)).start(); }
-        } catch (Exception e) { }
+        } catch (Exception e) { Log.e("TvHome", "server stopped: " + e); }
     }
 
     private String line(InputStream in) throws IOException {

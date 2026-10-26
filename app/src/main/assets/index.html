@@ -8,18 +8,18 @@
 :root{--bg:#070b1a;--ink:#eef3ff;--dim:#9fb0d6;--glow:#4f7cff;--tile:rgba(18,28,64,.55);--edge:rgba(79,124,255,.55);color-scheme:dark}
 *{box-sizing:border-box;margin:0}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif}
-#sky{position:fixed;inset:0;width:100%;height:100%}
-#photo{position:fixed;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,0) 55%),linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0) 35%),url(/wallpaper.jpg) center/cover no-repeat;display:none}
-#edge{position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 12vw 1vw var(--edge)}
+#sky{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%}
+#photo{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,rgba(0,0,0,.6),rgba(0,0,0,0) 55%),linear-gradient(0deg,rgba(0,0,0,.55),rgba(0,0,0,0) 35%),url(/wallpaper.jpg) center/cover no-repeat;display:none}
+#edge{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;box-shadow:inset 0 0 12vw 1vw var(--edge)}
 .top{position:fixed;left:4vw;top:5vh}
 #time{font-size:9vw;font-weight:200;letter-spacing:-.02em;line-height:1}
 #time small{font-size:2.2vw;margin-left:.6vw;color:var(--dim)}
 #date{font-size:1.9vw;margin:1vh 0 2.4vh;color:var(--dim)}
 .wx{display:flex;gap:1.2vw;align-items:center;font-size:1.5vw;margin-bottom:.8vh}
 .chip{display:inline-block;margin-top:1.2vh;padding:.7vh 1.2vw;border-radius:2vw;background:var(--tile);font-size:1.3vw}
-.dock{position:fixed;left:4vw;right:4vw;bottom:9vh;display:flex;gap:1.3vw;align-items:flex-end}
-.tile{position:relative;width:7.8vw;height:7.8vw;border-radius:1.6vw;background:var(--tile);border:1px solid rgba(160,180,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.4vw;text-align:center;outline:none;transition:transform .18s ease-out,opacity .18s ease-out;opacity:.85;will-change:transform}
-.tile::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .18s ease-out;box-shadow:0 0 2.4vw .4vw var(--glow),0 0 0 .22vw #fff}
+.dock{position:fixed;left:4vw;right:4vw;bottom:9vh;display:flex;gap:1vw;align-items:flex-end}
+.tile{position:relative;width:7vw;height:7vw;border-radius:1.6vw;background:var(--tile);border:1px solid rgba(160,180,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.3vw;text-align:center;outline:none;transition:transform .18s ease-out,opacity .18s ease-out;opacity:.85;will-change:transform}
+.tile::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;border-radius:inherit;opacity:0;transition:opacity .18s ease-out;box-shadow:0 0 2.4vw .4vw var(--glow),0 0 0 .22vw #fff}
 .tile:focus{transform:translateY(-1.2vh) scale(1.12);opacity:1}
 .tile:focus::after{opacity:1}
 .tile span{padding:0 .5vw}
@@ -27,9 +27,23 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font
 .tile:focus .label{opacity:1}
 #toast{position:fixed;right:4vw;bottom:26vh;padding:1vh 1.4vw;border-radius:1vw;background:var(--tile);font-size:1.3vw;opacity:0;transition:opacity .2s}
 #toast.on{opacity:1}
-#note{position:fixed;right:4vw;top:5vh;width:22vw;opacity:0;transition:opacity .4s}
+#col{position:fixed;right:4vw;top:5vh;width:22vw}
+#note{opacity:0;transition:opacity .4s}
 #note.on{opacity:1}
-#noteimg{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;border-radius:1.4vw;background:var(--tile);border:1px solid rgba(160,180,255,.25)}
+#nw{position:relative;width:100%;padding-top:75%}
+#noteimg{position:absolute;top:0;left:0;display:block;width:100%;height:100%;object-fit:contain;border-radius:1.4vw;background:var(--tile);border:1px solid rgba(160,180,255,.25)}
+#yt{position:relative;margin-top:1.6vh;width:100%;padding-top:56.25%;border-radius:1.2vw;background:#000;border:1px solid rgba(160,180,255,.25);overflow:hidden;outline:none;transition:transform .18s ease-out,box-shadow .18s ease-out}
+#yt:focus{transform:scale(1.04);box-shadow:0 0 2.4vw .4vw var(--glow),0 0 0 .22vw #fff}
+#yt iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;pointer-events:none}
+#yt .cap{position:absolute;left:0;right:0;bottom:0;padding:.5vh .8vw;font-size:1vw;background:rgba(0,0,0,.6);color:#fff}
+#jv{position:fixed;left:4vw;bottom:25vh;max-width:50vw;padding:1.2vh 1.6vw;border-radius:1.4vw;background:rgba(10,20,50,.88);border:1px solid var(--glow);box-shadow:0 0 2vw var(--glow);opacity:0;transition:opacity .25s;pointer-events:none}
+#jv.on{opacity:1}
+#jvs{font-size:1.1vw;letter-spacing:.15em;color:var(--dim)}
+#jvt{font-size:1.8vw;margin-top:.4vh}
+#jvh{font-size:1.2vw;color:var(--dim);margin-top:.4vh}
+#jv.listening #jvs{color:#3cc88a}
+@keyframes pl{50%{opacity:.4}}
+#jv.listening #jvt{animation:pl 1.2s infinite}
 #hint{margin-top:.8vh;font-size:1.05vw;color:var(--dim);text-align:center}
 @media (prefers-reduced-motion:reduce){.tile,.tile::after{transition:none}}
 </style>
@@ -56,20 +70,25 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font
 <div class="chip" id="tip">Checking forecast</div>
 </div>
 <div id="toast"></div>
-<div id="note"><img id="noteimg" alt=""><div id="hint"></div></div>
+<div id="col">
+<div id="note"><div id="nw"><img id="noteimg" alt=""></div><div id="hint"></div></div>
+<div id="yt" tabindex="0"><div class="cap">&#9654; YouTube &middot; press OK to open</div></div>
+</div>
+<div id="jv"><div id="jvs"></div><div id="jvt"></div><div id="jvh"></div></div>
 <nav class="dock" id="dock"></nav>
 <script>
 // ---- Edit this block to customise ----
-var CONFIG={lat:25.2,lon:55.27,city:"Dubai",hour12:true};
+var CONFIG={lat:25.2,lon:55.27,city:"Dubai",hour12:true,ytVideo:"jfKfPfyJRdk"}; // ytVideo = the YouTube video ID shown in the mini window
 var APPS=[
+["Jarvis","#jarvis","JARVIS"],
 ["HD Streamz","name:hdstreamz","HDS"],
 ["Netflix","com.netflix.ninja"],
 ["YouTube","com.google.android.youtube.tv"],
-["Prime Video","com.amazon.amazonvideo.livingroom"],
-["Disney+ Hotstar","in.startv.hotstar"],
-["Shahid","net.mbc.shahidtv"],
-["Apple TV","com.apple.atve.androidtv.appletv"],
+["Prime Video","com.amazon.amazonvideo.livingroom","Prime"],
+["Apple TV","com.apple.atve.androidtv.appletv","Apple"],
 ["Spotify","com.spotify.tv.android"],
+["Play Store","com.android.vending|name:play store","PLAY"],
+["Browser","#browser","WEB"],
 ["Settings","#settings"],
 ["Appearance","#theme"]
 ];
@@ -98,18 +117,44 @@ function applyTheme(){
 applyTheme();
 function launch(a){
   if(a[1]==="#theme"){ti=(ti+1)%THEMES.length;applyTheme();try{localStorage.setItem("theme",ti)}catch(e){}return}
+  if(a[1]==="#jarvis"){if(window.Android&&Android.jarvis){Android.jarvis()}else{say("Jarvis works on the TV")}return}
   if(window.Android&&Android.launch){Android.launch(a[1]);return}
-  toast.textContent="Would open "+a[0];toast.classList.add("on");
-  clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},1800);
+  say("Would open "+a[0]);
 }
-var tiles=[].slice.call(dock.children);
+function say(m){toast.textContent=m;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove("on")},1800)}
+var tiles=[].slice.call(dock.children),last=0,yt=document.getElementById("yt");
 tiles[0].focus();
 document.addEventListener("keydown",function(e){
-  var i=tiles.indexOf(document.activeElement);if(i<0)i=0;
+  var i=tiles.indexOf(document.activeElement),onYt=document.activeElement===yt;
+  if(i>=0)last=i;
+  if(onYt){
+    if(e.key==="ArrowDown"||e.key==="ArrowLeft"){tiles[last].focus();e.preventDefault()}
+    else if(e.key==="Enter"){launch(["YouTube","com.google.android.youtube.tv|name:youtube"])}
+    return;
+  }
+  if(i<0)i=0;
   if(e.key==="ArrowRight")tiles[Math.min(i+1,tiles.length-1)].focus();
   else if(e.key==="ArrowLeft")tiles[Math.max(i-1,0)].focus();
+  else if(e.key==="ArrowUp"){yt.focus();e.preventDefault()}
 });
-document.addEventListener("click",function(){if(tiles.indexOf(document.activeElement)<0)tiles[0].focus()});
+yt.onclick=function(){launch(["YouTube","com.google.android.youtube.tv|name:youtube"])};
+document.addEventListener("click",function(){if(tiles.indexOf(document.activeElement)<0&&document.activeElement!==yt)tiles[0].focus()});
+// mini YouTube window (muted, looping). If the TV's web viewer can't play it, the OK button still opens the YouTube app.
+if(window.Android){try{
+  var f=document.createElement("iframe");
+  f.setAttribute("allow","autoplay; encrypted-media");
+  f.src="https://www.youtube.com/embed/"+CONFIG.ytVideo+"?autoplay=1&mute=1&controls=0&loop=1&playlist="+CONFIG.ytVideo+"&modestbranding=1&playsinline=1&rel=0";
+  yt.insertBefore(f,yt.firstChild);
+}catch(e){}}
+// Jarvis overlay, driven by the app
+var jv=document.getElementById("jv"),jvs=document.getElementById("jvs"),jvt=document.getElementById("jvt"),jvh=document.getElementById("jvh"),jvTimer;
+window.jarvisUI=function(st,txt){
+  if(st==="heard"){jvh.textContent="You: "+txt;return}
+  if(st==="listening")jvh.textContent="";
+  jvs.textContent="JARVIS \u00b7 "+(st==="listening"?"LISTENING":"SPEAKING");
+  jvt.textContent=txt;jv.className="on "+st;clearTimeout(jvTimer);
+  if(st!=="listening")jvTimer=setTimeout(function(){jv.className=""},8000);
+};
 function tick(){
   var d=new Date(),h=d.getHours(),m=("0"+d.getMinutes()).slice(-2),s="";
   if(CONFIG.hour12){s=h>=12?"PM":"AM";h=h%12||12}
@@ -131,7 +176,7 @@ function fail(){document.getElementById("w1").textContent=CONFIG.city+"  --°C";
 weather();setInterval(weather,1800000);
 var nv=-1,noteEl=document.getElementById("note");
 if(window.Android&&Android.ip){
-  document.getElementById("hint").textContent="Draw a note from your phone: http://"+Android.ip()+":8080/draw";
+  document.getElementById("hint").textContent="Draw a note from your phone: http://"+Android.ip()+":"+location.port+"/draw";
   noteEl.classList.add("on");
   document.getElementById("noteimg").style.visibility="hidden";
 }
